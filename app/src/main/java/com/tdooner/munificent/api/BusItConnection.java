@@ -23,7 +23,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class BusItConnection {
     private static final String DEBUG_TAG = "LoginActivity";
-    private static final String API_ROOT = "http://busit.herokuapp.com";
+    private static final String API_ROOT = "https://busit.herokuapp.com";
     private static final String ALL_BUS_DATA_URL = API_ROOT + "/buses";
     private static final String CHECK_IN_URL = API_ROOT + "/check_ins";
     private final NetworkInfo networkInfo;
@@ -150,6 +150,7 @@ public class BusItConnection {
                 try {
                     String regid = gcm.register(SENDER_ID);
                     Log.d(DEBUG_TAG, "registered with GCM - id: " + regid);
+                    GoogleAuth auth = new GoogleAuth(context);
 
                     String urlStr = API_ROOT + "/users/";
                     URL url = new URL(urlStr);
@@ -162,7 +163,9 @@ public class BusItConnection {
                     PrintStream data = new PrintStream(conn.getOutputStream());
                     data.print("recipient_id=" + regid);
                     data.print("&");
-                    data.print("email=" + new GoogleAuth(context).getSavedEmail());
+                    data.print("email=" + auth.getSavedEmail());
+                    data.print("&");
+                    data.print("access_token=" + auth.getSavedAuthToken());
                     data.close();
                     conn.connect();
                     Log.d(DEBUG_TAG, "Made request to " + urlStr);
